@@ -1,0 +1,6 @@
+string target_frame
+float32 min_angular_vel
+float32 threshold
+float32 kp
+---
+bool success

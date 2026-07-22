@@ -1,0 +1,8 @@
+# This is an example file that serves as a placeholder
+
+# Request part of the service
+int32 a
+int32 b
+---
+# Response part of the service
+int32 sum

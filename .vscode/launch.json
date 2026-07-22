@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ROS: Launch",
+      "type": "ros",
+      "request": "launch",
+      "target": "${workspaceFolder}/install/vision_grasp/share/vision_grasp/launch/vision_action_server.launch.py",
+      "launch": []
+    },
+    {
+      "name": "ROS: Debug",
+      "type": "ros",
+      "request": "launch",
+      "target": "${workspaceFolder}/install/rbkairos_bringup/share/rbkairos_bringup/launch/rbkairos_moveit.launch.py",
+      "launch": []
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "(gdb) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/install/${input:package}/lib/${input:package}/${input:program}",
+      "args": [],
+      "preLaunchTask": "build",
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ],
+  "inputs": []
+}

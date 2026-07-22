@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test in devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: .devcontainer/ci/devcontainer.json
+          push: never
+          runCmd: |
+            set -e
+            source /opt/ros/jazzy/setup.bash
+            rosdep update
+            sudo rosdep install --from-paths src --ignore-src -r -y
+            colcon build --symlink-install
+            colcon test --event-handlers console_direct+
+            colcon test-result --verbose

@@ -1,0 +1,15 @@
+float64 target_x
+float64 target_y
+float64 target_yaw
+#
+float64 windup_limit 
+float64[] x_gains           # The Gains for x direction
+float64[] y_gains           # The Gains for y direction
+float64[] angular_gains   
+float64 pos_vel_limit
+float64 ang_vel_limit
+float64 pos_threshold
+float64 ang_threshold
+int32 docking_mode
+---
+bool success

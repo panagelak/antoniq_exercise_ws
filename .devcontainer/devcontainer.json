@@ -1,0 +1,70 @@
+{
+    "name": "ROS 2 Jazzy + Gazebo Harmonic (NVIDIA GPU)",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "USER_UID": "1000",
+            "USER_GID": "1000",
+            "VIDEO_GID": "44",
+            "RENDER_GID": "110"
+        }
+    },
+    "remoteUser": "ros",
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+    "runArgs": [
+        "--gpus=all",
+        "--network=host",
+        "--ipc=host",
+        "--cap-add=SYS_PTRACE"
+    ],
+
+    "containerEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "QT_X11_NO_MITSHM": "1",
+        "LIBGL_ALWAYS_SOFTWARE": "0",
+        "ROS_DOMAIN_ID": "0"
+    },
+
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+        "source=${localEnv:XAUTHORITY},target=/home/ros/.Xauthority,type=bind,consistency=cached"
+    ],
+
+    "postCreateCommand": "sudo rosdep update",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-iot.vscode-ros",
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "ms-python.python",
+                "redhat.vscode-yaml",
+                "xaver.clang-format",
+                "eeyore.yapf",
+                "smilerobotics.urdf",
+                "anthropic.claude-code"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "[cpp]": {
+                    "editor.defaultFormatter": "xaver.clang-format",
+                    "editor.formatOnSave": true
+                },
+                "[c]": {
+                    "editor.defaultFormatter": "xaver.clang-format",
+                    "editor.formatOnSave": true
+                },
+                "[python]": {
+                    "editor.defaultFormatter": "eeyore.yapf",
+                    "editor.formatOnSave": true
+                },
+                "clang-format.style": "file",
+                "yapf.args": ["--style=${workspaceFolder}/.style.yapf"]
+            }
+        }
+    }
+}

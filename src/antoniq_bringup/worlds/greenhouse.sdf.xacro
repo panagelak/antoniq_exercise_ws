@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<sdf version="1.8" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Deployment-time overrides, e.g. `xacro greenhouse.sdf.xacro row_count:=4 row_width:=0.8` -->
+  <xacro:arg name="row_count" default="3"/>
+  <xacro:arg name="row_length" default="6.0"/>
+  <xacro:arg name="row_width" default="1.0"/>
+  <xacro:arg name="wall_thickness" default="0.1"/>
+  <xacro:arg name="wall_height" default="0.5"/>
+  <xacro:arg name="headland_extension" default="0.5"/>
+
+  <!-- A single wall of the given length, centred on the world origin along x,
+       offset by y from the world's x-axis. Used both for the row dividers and
+       (with an extended length) for the two outer boundary walls. -->
+  <xacro:macro name="row_divider" params="index y length wall_thickness wall_height">
+    <model name="row_divider_${index}">
+      <static>true</static>
+      <pose>0 ${y} ${wall_height / 2.0} 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>${length} ${wall_thickness} ${wall_height}</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>${length} ${wall_thickness} ${wall_height}</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.5 0.15 1</ambient>
+            <diffuse>0.15 0.6 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </xacro:macro>
+
+  <!-- A cube obstacle centred in a row, spanning the row's full clear width so it
+       blocks the corridor end to end (wall face to wall face). -->
+  <xacro:macro name="row_obstacle" params="name y size">
+    <model name="row_obstacle_${name}">
+      <static>true</static>
+      <pose>0 ${y} ${0.25} 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>${0.1} ${size} ${0.5}</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>${0.1} ${size} ${0.5}</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.1 0.1 1</ambient>
+            <diffuse>0.7 0.15 0.15 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </xacro:macro>
+
+  <!-- A perpendicular wall closing off one end of the field, joining the two
+       outer boundary walls into a single enclosed box. Spans the full
+       field_width along y and is centred at the given x. -->
+  <xacro:macro name="end_wall" params="name x field_width wall_thickness wall_height">
+    <model name="end_wall_${name}">
+      <static>true</static>
+      <pose>${x} 0 ${wall_height / 2.0} 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>${wall_thickness} ${field_width} ${wall_height}</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>${wall_thickness} ${field_width} ${wall_height}</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.5 0.15 1</ambient>
+            <diffuse>0.15 0.6 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </xacro:macro>
+
+  <!-- Recursively lays out `remaining` dividers spaced `row_pitch` apart, starting at y,
+       so that `row_count` corridors need `row_count + 1` bounding walls. The first
+       (index 0) and last (index total_index) walls are the field's outer boundary
+       and use outer_length; every wall in between only spans the row itself and
+       uses inner_length. -->
+  <xacro:macro name="row_dividers"
+               params="remaining y row_pitch inner_length outer_length wall_thickness wall_height total_index index:=0">
+    <xacro:if value="${remaining > 0}">
+      <xacro:property name="divider_length"
+                       value="${outer_length if (index == 0 or index == total_index) else inner_length}"/>
+      <xacro:row_divider index="${index}" y="${y}" length="${divider_length}"
+                          wall_thickness="${wall_thickness}" wall_height="${wall_height}"/>
+      <xacro:row_dividers remaining="${remaining - 1}" y="${y + row_pitch}" row_pitch="${row_pitch}"
+                           inner_length="${inner_length}" outer_length="${outer_length}"
+                           wall_thickness="${wall_thickness}" wall_height="${wall_height}"
+                           total_index="${total_index}" index="${index + 1}"/>
+    </xacro:if>
+  </xacro:macro>
+
+  <!-- Greenhouse world: `row_count` parallel crop-row corridors, `row_width` clear of
+       obstruction and `row_length` long, each bounded by a pair of `row_divider` walls.
+       The two outer boundary walls extend `headland_extension` beyond each row end and
+       are joined by perpendicular end walls, so the whole field is a closed box with the
+       robot fully enclosed; the interior dividers stop at the row ends, leaving the
+       headland strips at both ends open for turning between rows. -->
+  <xacro:macro name="crop_row_world"
+               params="world_name row_count row_length row_width wall_thickness wall_height headland_extension">
+    <!-- row_pitch is the wall-centre-to-wall-centre spacing; subtracting wall_thickness
+         back out when the corridor is measured between wall faces recovers row_width, so
+         row_width is always the actual clear/free width of the corridor, not the pitch. -->
+    <xacro:property name="row_pitch" value="${row_width + wall_thickness}"/>
+    <xacro:property name="field_width" value="${row_count * row_pitch + wall_thickness}"/>
+    <xacro:property name="field_length" value="${row_length + 2 * headland_extension + wall_thickness}"/>
+    <xacro:property name="y_start" value="${-field_width / 2.0 + wall_thickness / 2.0}"/>
+    <xacro:property name="outer_wall_length" value="${row_length + 2 * headland_extension}"/>
+    <xacro:property name="end_wall_x" value="${row_length / 2.0 + headland_extension}"/>
+    <!-- Row i's centreline is y_start + row_pitch/2 + i*row_pitch; row 1 (the second row,
+         always present per crop_row_world's caller) is used below for a blocking obstacle. -->
+    <xacro:property name="row_1_y" value="${y_start + 1.5 * row_pitch}"/>
+
+    <world name="${world_name}">
+
+      <physics type="ode">
+        <real_time_update_rate>1000.0</real_time_update_rate>
+        <max_step_size>0.001</max_step_size>
+        <real_time_factor>1</real_time_factor>
+      </physics>
+
+      <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+      <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+      <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+      <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+        <render_engine>ogre2</render_engine>
+      </plugin>
+      <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+
+      <light type="directional" name="sun">
+        <cast_shadows>true</cast_shadows>
+        <pose>0 0 10 0 0 0</pose>
+        <diffuse>0.8 0.8 0.8 1</diffuse>
+        <specular>0.2 0.2 0.2 1</specular>
+        <direction>-0.5 0.1 -0.9</direction>
+      </light>
+
+      <model name="ground_plane">
+        <static>true</static>
+        <link name="link">
+          <collision name="collision">
+            <geometry>
+              <plane>
+                <normal>0 0 1</normal>
+              </plane>
+            </geometry>
+          </collision>
+          <visual name="visual">
+            <geometry>
+              <plane>
+                <normal>0 0 1</normal>
+                <size>${field_length} ${field_width + 2}</size>
+              </plane>
+            </geometry>
+            <material>
+              <ambient>0.35 0.3 0.25 1</ambient>
+              <diffuse>0.35 0.3 0.25 1</diffuse>
+            </material>
+          </visual>
+        </link>
+      </model>
+
+      <xacro:row_dividers remaining="${row_count + 1}" y="${y_start}" row_pitch="${row_pitch}"
+                           inner_length="${row_length}" outer_length="${outer_wall_length}"
+                           wall_thickness="${wall_thickness}" wall_height="${wall_height}"
+                           total_index="${row_count}"/>
+
+      <xacro:end_wall name="near" x="${-end_wall_x}" field_width="${field_width}"
+                       wall_thickness="${wall_thickness}" wall_height="${wall_height}"/>
+      <xacro:end_wall name="far" x="${end_wall_x}" field_width="${field_width}"
+                       wall_thickness="${wall_thickness}" wall_height="${wall_height}"/>
+
+      <xacro:row_obstacle name="row1_blocker" y="${row_1_y}" size="${row_width}"/>
+
+    </world>
+  </xacro:macro>
+
+  <!-- Instantiate the world with this deployment's dimensions -->
+  <xacro:crop_row_world world_name="greenhouse"
+                         row_count="$(arg row_count)"
+                         row_length="$(arg row_length)"
+                         row_width="$(arg row_width)"
+                         wall_thickness="$(arg wall_thickness)"
+                         wall_height="$(arg wall_height)"
+                         headland_extension="$(arg headland_extension)"/>
+
+</sdf>

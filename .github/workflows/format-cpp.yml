@@ -1,0 +1,22 @@
+name: C++ Format
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Check C++ formatting
+        run: |
+          set -e
+          files=$(find src -regex '.*\.\(cpp\|hpp\|h\|cc\)$' -not -path 'src/nav2_straightline_planner/*')
+          echo "$files"
+          clang-format --style=file --dry-run --Werror $files

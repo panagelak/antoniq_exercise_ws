@@ -1,0 +1,10 @@
+{
+    "name": "ROS 2 Jazzy (CI)",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": "../.."
+    },
+    "remoteUser": "ros",
+    "workspaceFolder": "/workspace",
+    "postCreateCommand": "sudo chown -R ros:ros /workspace && sudo rosdep update"
+}

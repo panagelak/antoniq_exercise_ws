@@ -1,0 +1,62 @@
+# ros_gz_bridge topic mappings for antoniq_description's waffle.urdf.xacro when spawned with
+# use_ros2_control:=false, i.e. driven by gz-sim's built-in DiffDrive/JointStatePublisher system
+# plugins instead of ros2_control. Those plugins talk cmd_vel/odom/tf/joint_states over gz
+# transport, so (unlike waffle_bridge.yaml) those four need bridging into ROS here.
+# Mirrors turtlebot3_gazebo's turtlebot3_waffle_bridge.yaml so the same ROS topics
+# are exposed, without depending on the turtlebot3_gazebo package.
+
+# gz topic published by the simulator core
+- ros_topic_name: "clock"
+  gz_topic_name: "clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+
+# gz topic published by the JointStatePublisher plugin
+- ros_topic_name: "joint_states"
+  gz_topic_name: "joint_states"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  direction: GZ_TO_ROS
+
+# gz topic published by the DiffDrive plugin
+- ros_topic_name: "odom"
+  gz_topic_name: "odom"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  direction: GZ_TO_ROS
+
+# gz topic published by the DiffDrive plugin
+- ros_topic_name: "tf"
+  gz_topic_name: "tf"
+  ros_type_name: "tf2_msgs/msg/TFMessage"
+  gz_type_name: "gz.msgs.Pose_V"
+  direction: GZ_TO_ROS
+
+# gz topic subscribed to by the DiffDrive plugin
+- ros_topic_name: "cmd_vel"
+  gz_topic_name: "cmd_vel"
+  ros_type_name: "geometry_msgs/msg/TwistStamped"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+
+# gz topic published by the IMU sensor
+- ros_topic_name: "imu"
+  gz_topic_name: "imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+# gz topic published by the lidar sensor
+- ros_topic_name: "scan"
+  gz_topic_name: "scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+# gz topic published by the camera sensor
+- ros_topic_name: "camera/camera_info"
+  gz_topic_name: "camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS

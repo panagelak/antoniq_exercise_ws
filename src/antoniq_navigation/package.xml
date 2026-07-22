@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="3">
+    <name>antoniq_navigation</name>
+    <version>0.0.0</version>
+    <description>antoniq_navigation</description>
+    <maintainer email="panos@panos.de">Panos</maintainer>
+    <license>Apache-2.0</license>
+    <buildtool_depend>ament_cmake</buildtool_depend>
+    <exec_depend>launch</exec_depend>
+    <exec_depend>launch_ros</exec_depend>
+    <exec_depend>nav2_common</exec_depend>
+    <exec_depend>nav2_bringup</exec_depend>
+    <exec_depend>slam_toolbox</exec_depend>
+    <exec_depend>rviz2</exec_depend>
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>

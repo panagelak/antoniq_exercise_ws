@@ -1,0 +1,40 @@
+# controller_manager instance spun up in-process by the gz_ros2_control GazeboSimROS2ControlPlugin
+# (see the <gazebo><plugin ...> tag in antoniq_description/urdf/waffle.urdf.xacro). It loads the
+# hardware described by the URDF's <ros2_control> block and the controllers listed below.
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive_base_controller:
+      type: diff_drive_controller/DiffDriveController
+
+joint_state_broadcaster:
+  ros__parameters:
+    use_sim_time: true
+
+diff_drive_base_controller:
+  ros__parameters:
+    use_sim_time: true
+
+    left_wheel_names: ["wheel_left_joint"]
+    right_wheel_names: ["wheel_right_joint"]
+
+    # Physical values carried over unchanged from the gz-sim DiffDrive system plugin
+    # this controller replaces.
+    wheel_separation: 0.287
+    wheel_radius: 0.033
+
+    odom_frame_id: odom
+    base_frame_id: base_footprint
+    pose_covariance_diagonal: [0.001, 0.001, 0.0, 0.0, 0.0, 0.01]
+    twist_covariance_diagonal: [0.001, 0.0, 0.0, 0.0, 0.0, 0.01]
+
+    open_loop: false
+    enable_odom_tf: true
+
+    cmd_vel_timeout: 0.5
+    publish_rate: 30.0

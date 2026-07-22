@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="http://download.ros.org/schema/package_format3.xsd"?>
+<package format="3">
+  <name>antoniq_description</name>
+  <version>0.1.0</version>
+  <description>
+    TurtleBot3 Waffle URDF description, with Gazebo (gz-sim) sensor and diff-drive
+    plugins built in so it can be spawned directly from robot_description, without
+    depending on turtlebot3_gazebo's model.sdf. Meshes vendored from turtlebot3_description
+    (Apache-2.0, ROBOTIS CO., LTD).
+  </description>
+  <maintainer email="panagiotis.angelakis.robot@gmail.com">ros</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>urdf</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

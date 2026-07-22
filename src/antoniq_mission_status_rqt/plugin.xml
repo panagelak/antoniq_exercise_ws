@@ -1,0 +1,18 @@
+<library path="src">
+  <class name="MissionStatusPlugin" type="antoniq_mission_status_rqt.mission_status_plugin.MissionStatusPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Displays antoniq_interfaces/MissionStatus (row/waypoint progress and a human-readable
+      status description) published by antoniq_mission_node on /mission_status.
+    </description>
+    <qtgui>
+      <group>
+        <label>Antoniq</label>
+        <icon type="theme">folder</icon>
+        <statustip>Antoniq mission plugins.</statustip>
+      </group>
+      <label>Mission Status</label>
+      <icon type="theme">dialog-information</icon>
+      <statustip>Shows the current antoniq_mission_node mission status.</statustip>
+    </qtgui>
+  </class>
+</library>

@@ -1,0 +1,22 @@
+name: Python Format
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  yapf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yapf
+        run: sudo apt-get update && sudo apt-get install -y python3-yapf
+
+      - name: Check Python formatting
+        run: |
+          set -e
+          files=$(find src -name '*.py' -not -path 'src/nav2_straightline_planner/*' -not -path '*/__pycache__/*')
+          echo "$files"
+          python3 -m yapf --diff --style=.style.yapf $files

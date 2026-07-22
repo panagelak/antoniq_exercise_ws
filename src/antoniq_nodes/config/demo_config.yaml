@@ -1,0 +1,6 @@
+/**:
+  antoniq_demo:
+    ros__parameters:
+      # pose tracking
+      enabled: false
+

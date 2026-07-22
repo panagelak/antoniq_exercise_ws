@@ -1,0 +1,37 @@
+# ros_gz_bridge topic mappings for antoniq_description's waffle.urdf.xacro.
+# Mirrors turtlebot3_gazebo's turtlebot3_waffle_bridge.yaml so the same ROS topics
+# are exposed, without depending on the turtlebot3_gazebo package.
+#
+# joint_states/odom/tf/cmd_vel are NOT bridged here: since the wheels moved onto
+# ros2_control (see waffle.urdf.xacro's <ros2_control> block and
+# antoniq_controllers.yaml), joint_state_broadcaster and diff_drive_base_controller
+# publish/subscribe those directly as native ROS 2 topics from the controller_manager
+# the gz_ros2_control plugin runs in-process -- there's no gz-side topic to bridge.
+
+# gz topic published by the simulator core
+- ros_topic_name: "clock"
+  gz_topic_name: "clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+
+# gz topic published by the IMU sensor
+- ros_topic_name: "imu"
+  gz_topic_name: "imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+# gz topic published by the lidar sensor
+- ros_topic_name: "scan"
+  gz_topic_name: "scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+# gz topic published by the camera sensor
+- ros_topic_name: "camera/camera_info"
+  gz_topic_name: "camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS

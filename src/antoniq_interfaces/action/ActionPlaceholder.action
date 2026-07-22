@@ -1,0 +1,10 @@
+# This is an example file that serves as a placeholder
+
+# Goal definition
+int32 goal
+---
+# Result definition
+int32 result
+---
+# Feedback definition
+int32 feedback
